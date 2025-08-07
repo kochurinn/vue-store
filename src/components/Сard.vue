@@ -1,11 +1,23 @@
+<script setup>
+defineProps({
+  title: String,
+  imgUrl: String,
+  price: Number,
+  isFavorite: Boolean,
+  isAdded: Boolean,
+})
+</script>
+
 <template>
-  <li class="product_card border rounded-xl w-3xs">
-    <img class="w-50 m-auto pb-10" src="../../public/sneakers/sneakers-1.jpg" alt="" />
-    <div class="flex justify-between px-8 mb-5">
+  <li class="product_card border rounded-xl w-3xs p-5 relative">
+    <img :src="isFavorite ? '/like-2.svg' : '/like-1.svg'" alt="" class="absolute left-5 top-5" />
+    <img class="w-50 m-auto" :src="imgUrl" alt="" />
+    <div class="title mt-8">{{ title }}</div>
+    <div class="flex justify-between mb-5 mt-5">
       <div class="price flex flex-col">
-        <span>Цена:</span><span class="font-bold">12 930 руб.</span>
+        <span>Цена:</span><span class="font-bold">{{ price }} руб.</span>
       </div>
-      <img src="../../public/plus.svg" alt="" />
+      <img :src="isAdded ? '/checked.svg' : '/plus.svg'" alt="" />
     </div>
   </li>
 </template>
