@@ -9,7 +9,7 @@ import CardList from './components/CardList.vue'
 const items = ref([])
 
 const filters = reactive({
-  sortBy: '',
+  sortBy: 'title',
   searchQuery: '',
 })
 
@@ -21,25 +21,27 @@ const onChangeInput = (event) => {
   filters.searchQuery = event.target.value
 }
 
-onMounted(async () => {
+const fetchItems = async () => {
   try {
-    const { data } = await axios.get('https://56036e980bcb4afb.mokky.dev/items')
-    items.value = data
-  } catch (err) {
-    console.log(err)
-  }
-})
+    const params = {
+      sortBy: filters.sortBy
+    }
 
-watch(filters, async () => {
-  try {
-    const { data } = await axios.get(
-      'https://56036e980bcb4afb.mokky.dev/items?sortBy=' + filters.sortBy,
-    )
+    if (filters.searchQuery) {
+      params.title = `*${filters.searchQuery}*`
+    }
+
+    const {data} = await axios.get(`https://56036e980bcb4afb.mokky.dev/items`, {
+      params
+    })
     items.value = data
   } catch (err) {
     console.log(err)
   }
-})
+}
+
+onMounted(fetchItems)
+watch(filters, fetchItems)
 
 // watch(filters, async () => {
 //   try {
@@ -70,7 +72,7 @@ watch(filters, async () => {
         <div class="relative">
           <img class="absolute left-4 top-3" src="/search.svg" alt="" />
           <input
-            @change="onChangeInput"
+            @input="onChangeInput"
             type="text"
             placeholder="Поиск..."
             class="border rounded-md py-2 pl-10 pr-4 outline-none focus:border-gray-400"
