@@ -1,19 +1,21 @@
 <script setup>
 import Card from './Сard.vue'
+
+defineProps({
+  items: Array,
+})
 </script>
 
 <template>
   <ul class="grid grid-cols-4 gap-10">
     <Card
-      img-url="/sneakers/sneakers-1.jpg"
-      title="Кроссовки"
-      :price="12930"
+      v-for="item in items"
+      :key="item.id"
+      :img-url="item.imageUrl"
+      :title="item.title"
+      :price="item.price"
       :is-favorite="false"
       :is-added="false"
     />
-    <Card />
-    <Card />
-    <Card />
-    <Card />
   </ul>
 </template>
