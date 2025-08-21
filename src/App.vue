@@ -21,6 +21,29 @@ const onChangeInput = (event) => {
   filters.searchQuery = event.target.value
 }
 
+const fetchFavourites = async () => {
+  try {
+    const { data: favorites } = await axios.get('https://56036e980bcb4afb.mokky.dev/favorites')
+
+    items.value = items.value.map(item => {
+      const favorite = favorites.find(favorite => favorite.parentId === item.id)
+
+      if (!favorite) {
+        return item
+      }
+
+      return {
+        ...item,
+        isFavorite: true,
+        favoriteId: favorite.id
+      }
+    })
+    console.log(items.value)
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 const fetchItems = async () => {
   try {
     const params = {
@@ -34,25 +57,23 @@ const fetchItems = async () => {
     const {data} = await axios.get(`https://56036e980bcb4afb.mokky.dev/items`, {
       params
     })
-    items.value = data
+    items.value = data.map(obj => {
+      return {
+        ...obj,
+        isFavourite: false,
+        isAdded: false,
+      }
+    })
   } catch (err) {
     console.log(err)
   }
 }
 
-onMounted(fetchItems)
 watch(filters, fetchItems)
-
-// watch(filters, async () => {
-//   try {
-//     const { data } = await axios.get(
-//       `https://56036e980bcb4afb.mokky.dev/items?title*${filters.searchQuery}*`,
-//     )
-//     items.value = data
-//   } catch (err) {
-//     console.log(err)
-//   }
-// })
+onMounted(async () => {
+  await fetchItems()
+  await fetchFavourites()
+})
 </script>
 
 <template>
