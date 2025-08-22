@@ -4,6 +4,8 @@ import Card from './Сard.vue'
 defineProps({
   items: Array,
 })
+
+const emit = defineEmits(['addToFavorite'])
 </script>
 
 <template>
@@ -16,6 +18,7 @@ defineProps({
       :price="item.price"
       :is-added="false"
       :isFavorite="item.isFavorite"
+      :onClickFavorite="() => emit('addToFavorite', item)"
     />
   </ul>
 </template>
