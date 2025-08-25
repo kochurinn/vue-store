@@ -1,12 +1,21 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, provide, reactive, ref, watch } from 'vue'
 import axios from 'axios'
 
 import Header from './components/Header.vue'
 import CardList from './components/CardList.vue'
-// import Drawer from './components/Drawer.vue'
+import Drawer from './components/Drawer.vue'
 
 const items = ref([])
+
+const drawerOpen = ref(false)
+const toggleDrawer = () => {
+  if (!drawerOpen.value) {
+    drawerOpen.value = true
+    return
+  }
+  drawerOpen.value = false
+}
 
 const filters = reactive({
   sortBy: 'title',
@@ -22,16 +31,23 @@ const onChangeInput = (event) => {
 }
 
 const addToFavorite = async (item) => {
-  if (!item.isFavorite) {
-    try {
+  try {
+    if (!item.isFavorite) {
       const obj = {
         parentId: item.id,
       }
 
-      const {data} = await axios.post('https://56036e980bcb4afb.mokky.dev/favorites', obj)
-
       item.isFavorite = true
-    } catch (err) {
+
+      const { data } = await axios.post('https://56036e980bcb4afb.mokky.dev/favorites', obj)
+
+      item.favoriteId = data.id
+    } else {
+      item.isFavorite = false
+      await axios.delete(`https://56036e980bcb4afb.mokky.dev/favorites/${item.favoriteId}`)
+      item.favoriteId = null
+    }
+  } catch (err) {
     console.log(err)
   }
 }
@@ -75,6 +91,7 @@ const fetchItems = async () => {
       return {
         ...obj,
         isFavourite: false,
+        favoriteId: null,
         isAdded: false,
       }
     })
@@ -88,13 +105,15 @@ onMounted(async () => {
   await fetchItems()
   await fetchFavourites()
 })
+
+provide('toggleDrawer', toggleDrawer)
 </script>
 
 <template>
   <body class="w-[1150px] m-auto">
-    <!-- <Drawer /> -->
+    <Drawer v-if="drawerOpen" />
 
-    <Header />
+    <Header @toggle-drawer="toggleDrawer" />
 
     <div class="flex justify-between items-center mt-10">
       <h1 class="text-3xl font-bold">Все кроссовки</h1>
@@ -117,7 +136,7 @@ onMounted(async () => {
     </div>
 
     <main class="mt-10">
-      <CardList :items="items" @addToFavorite="addToFavorite" />
+      <CardList :items="items" @add-to-favorite="addToFavorite" />
     </main>
   </body>
 </template>
