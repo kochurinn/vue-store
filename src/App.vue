@@ -7,6 +7,7 @@ import CardList from './components/CardList.vue'
 import Drawer from './components/Drawer.vue'
 
 const items = ref([])
+const orders = ref([])
 
 const drawerOpen = ref(false)
 const toggleDrawer = () => {
@@ -15,6 +16,18 @@ const toggleDrawer = () => {
     return
   }
   drawerOpen.value = false
+}
+
+const addToCart = (item) => {
+  if (!item.isAdded) {
+    orders.value.push(item)
+    item.isAdded = true
+    console.log(orders)
+  } else {
+    orders.value.splice(orders.value.indexOf(item), 1)
+    item.isAdded = false
+    console.log(orders)
+  }
 }
 
 const filters = reactive({
@@ -106,12 +119,11 @@ onMounted(async () => {
   await fetchFavourites()
 })
 
-provide('toggleDrawer', toggleDrawer)
 </script>
 
 <template>
   <body class="w-[1150px] m-auto">
-    <Drawer v-if="drawerOpen" />
+    <Drawer @toggle-drawer="toggleDrawer" v-if="drawerOpen" />
 
     <Header @toggle-drawer="toggleDrawer" />
 
@@ -136,7 +148,7 @@ provide('toggleDrawer', toggleDrawer)
     </div>
 
     <main class="mt-10">
-      <CardList :items="items" @add-to-favorite="addToFavorite" />
+      <CardList :items="items" @add-to-favorite="addToFavorite" @add-to-cart="addToCart"/>
     </main>
   </body>
 </template>

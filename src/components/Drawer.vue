@@ -1,15 +1,14 @@
 <script setup>
-import { inject } from 'vue'
 import CartItemList from './CartItemList.vue'
 
-const closeDrawer = inject('toggleDrawer')
+const emit = defineEmits('toggleDrawer')
 </script>
 
 <template>
   <div class="bg-black opacity-50 size-full absolute z-1 top-0 left-0"></div>
   <div class="bg-white w-120 absolute top-0 right-0 z-1 h-screen p-10">
     <img
-      @click="closeDrawer"
+      @click="() => emit('toggleDrawer')"
       src="/arrow-next.svg"
       class="invert rotate-180 absolute top-13.5 cursor-pointer"
       alt=""

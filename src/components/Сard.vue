@@ -6,6 +6,7 @@ defineProps({
   isFavorite: Boolean,
   isAdded: Boolean,
   onClickFavorite: Function,
+  onClickAdd: Function,
 })
 </script>
 
@@ -23,7 +24,11 @@ defineProps({
       <div class="price flex flex-col">
         <span>Цена:</span><span class="font-bold">{{ price }} руб.</span>
       </div>
-      <img :src="isAdded ? '/checked.svg' : '/plus.svg'" alt="" />
+      <img
+        @click="onClickAdd"
+        :src="isAdded ? '/checked.svg' : '/plus.svg'"
+        alt=""
+      />
     </div>
   </li>
 </template>
